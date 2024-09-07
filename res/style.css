@@ -1,0 +1,116 @@
+* {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10pt;
+  font-weight: bold;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+}
+
+window, button, modelbutton {
+  all: unset;
+}
+
+.module {
+  background-color: rgba(48, 48, 48, 0.5);
+  border: solid 0.0125rem rgb(255, 255, 255);
+  border-radius: 1.25rem;
+  padding: 1rem;
+}
+.module.hoverable {
+  margin: 0.0125rem;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+}
+.module.hoverable:hover {
+  background-color: rgba(0, 45, 102, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+}
+.module.hoverable:active {
+  background-color: rgba(102, 170, 255, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  transform: scale(0.9);
+}
+.module.workspaces {
+  padding: 0;
+}
+.module.workspaces .workspaces__workspace {
+  all: unset;
+  border: solid 0.1rem transparent;
+  border-radius: 1.25rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+}
+.module.workspaces .workspaces__workspace.active {
+  background-color: rgba(102, 170, 255, 0.2);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  color: #66aaff;
+}
+.module.workspaces .workspaces__workspace:hover {
+  background-color: rgba(0, 45, 102, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+}
+.module.workspaces .workspaces__workspace:active {
+  background-color: rgba(102, 170, 255, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  transform: scale(0.9);
+}
+.module.focused {
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+}
+.module.focused .focused__title {
+  color: #66aaff;
+}
+.module.focused .focused__icon + .focused__title {
+  padding-left: 0.5rem;
+}
+.module.power-menu {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.module.systray {
+  padding: 0;
+}
+.module.systray .systray__icon {
+  background-color: transparent;
+  border: solid 0.1rem transparent;
+  border-radius: 1.25rem;
+  padding: 0.5rem 1rem;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+}
+.module.systray .systray__icon:hover {
+  background-color: rgba(0, 45, 102, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+}
+.module.systray .systray__icon:active {
+  background-color: rgba(102, 170, 255, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  transform: scale(0.9);
+}
+
+.menu > contents, .menu > arrow {
+  background-color: rgba(48, 48, 48, 0.5);
+  border: solid 0.0125rem rgb(255, 255, 255);
+  border-radius: 1.25rem;
+  padding: 0.5rem;
+}
+.menu modelbutton {
+  background-color: transparent;
+  border: solid 0.1rem transparent;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+}
+.menu modelbutton:hover {
+  background-color: rgba(0, 45, 102, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+}
+.menu modelbutton:active {
+  background-color: rgba(102, 170, 255, 0.5);
+  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  transform: scale(0.9);
+}
+
+/*# sourceMappingURL=style.css.map */

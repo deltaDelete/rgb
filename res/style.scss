@@ -1,0 +1,147 @@
+$bg-default: rgb(48, 48, 48);
+$bg-default-50: rgba($bg-default, 0.5);
+$warn: rgb(255, 187, 102);
+$warn-dark: rgb(102, 56, 0);
+$error: rgb(255, 110, 102);
+$error-dark: rgb(102, 5, 0);
+$active: rgb(102, 170, 255);
+$active-dark: rgb(0, 45, 102);
+$inactive: rgb(156, 156, 156);
+$inactive-dark: rgb(38, 38, 38);
+$bg-hover: rgba($active-dark, 0.5);
+$fg-hover: rgba($active, 1);
+$border-hover: rgba($active, 0.95);
+$border-color-default: rgba(255, 255, 255, 255);
+$bg-active: rgba($active, 0.5);
+
+$size-small: 0.5rem;
+$size-default: 1rem;
+$size-large: 2rem;
+$border-radius-default: 1.0rem + 0.25rem;
+$border-default: solid 0.0125rem $border-color-default;
+$border-hover: solid 0.1rem $border-hover;
+$border-not-hover: solid 0.1rem transparent;
+
+$shadow-default: 0.25rem 0.25rem 1rem rgba(black, 0.2),
+-0.25rem 0.25rem 1rem rgba(black, 0.2),
+0.25rem -0.25rem 1rem rgba(black, 0.2),
+-0.25rem -0.25rem 1rem rgba(black, 0.2);
+
+$transition-default: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+
+@mixin hoverable () {
+  &:hover {
+    background-color: $bg-hover;
+    border: $border-hover;
+  }
+}
+
+@mixin activatable () {
+  transition: transform 50ms ease-in-out, $transition-default;
+  &:active {
+    background-color: $bg-active;
+    border: $border-hover;
+    transform: scale(0.9);
+  }
+}
+
+* {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10pt;
+  font-weight: bold;
+  transition: $transition-default;
+}
+
+window, button, modelbutton {
+  all: unset;
+}
+
+.module {
+  background-color: $bg-default-50;
+  border: $border-default;
+  border-radius: $border-radius-default;
+  padding: $size-default;
+
+  &.hoverable {
+    margin: 0.0125rem;
+    transition: $transition-default;
+
+    @include hoverable;
+    @include activatable;
+  }
+
+  &.workspaces {
+    padding: 0;
+
+    & .workspaces__workspace {
+      all: unset;
+      border: $border-not-hover;
+      border-radius: $border-radius-default;
+      padding-left: $size-default + 0.25rem;
+      padding-right: $size-default + 0.25rem;
+      transition: $transition-default;
+
+      &.active {
+        background-color: rgba($active, 0.2);
+        border: $border-hover;
+        color: $fg-hover;
+      }
+
+      @include hoverable;
+      @include activatable;
+    }
+  }
+
+  &.focused {
+    transition: $transition-default;
+
+    & .focused__title {
+      color: $fg-hover;
+    }
+
+    & .focused__icon + .focused__title {
+      padding-left: $size-small;
+    }
+  }
+
+  &.power-menu {
+    padding-left: $size-default + 0.25rem;
+    padding-right: $size-default + 0.25rem;
+  }
+
+  &.systray {
+    padding: 0;
+
+    & .systray__icon {
+      background-color: transparent;
+      border: $border-not-hover;
+      border-radius: $size-default + 0.25rem;
+      padding: $size-small $size-default;
+      transition: $transition-default;
+
+      @include hoverable;
+      @include activatable;
+    }
+  }
+}
+
+.menu {
+  & > contents,
+  & > arrow {
+    background-color: $bg-default-50;
+    border: $border-default;
+    border-radius: $border-radius-default;
+    padding: $size-small;
+  }
+
+  & modelbutton {
+    background-color: transparent;
+    border: $border-not-hover;
+    border-radius: $size-small + 0.25rem;
+    padding: $size-small $size-default;
+    transition: $transition-default;
+
+    @include hoverable;
+    @include activatable;
+  }
+}
