@@ -29,19 +29,24 @@ $shadow-default: 0.25rem 0.25rem 1rem rgba(black, 0.2),
 
 $transition-default: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
 
-@mixin hoverable () {
-  &:hover {
-    background-color: $bg-hover;
-    border: $border-hover;
+@mixin hoverable() {
+  & {
+    &:hover {
+      background-color: $bg-hover;
+      border: $border-hover;
+    }
   }
 }
 
-@mixin activatable () {
-  transition: transform 50ms ease-in-out, $transition-default;
-  &:active {
-    background-color: $bg-active;
-    border: $border-hover;
-    transform: scale(0.9);
+@mixin activatable() {
+  & {
+    transition: transform 50ms ease-in-out, $transition-default;
+
+    &:active {
+      background-color: $bg-active;
+      border: $border-hover;
+      transform: scale(0.9);
+    }
   }
 }
 

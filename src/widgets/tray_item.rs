@@ -297,7 +297,6 @@ impl TrayItem {
                             debug!("{err}")
                         }
                     };
-                    ()
                 });
             });
             vec.push(action);

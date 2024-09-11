@@ -32,11 +32,6 @@ impl SimpleAsyncComponent for SysTray {
             add_css_class: "module",
             add_css_class: "systray",
             set_orientation: gtk::Orientation::Horizontal,
-
-            //TODO FACTORY [TrayItem]
-            // gtk::Label {
-            //     set_label: "Hello"
-            // },
         }
     }
 
@@ -73,7 +68,6 @@ impl SimpleAsyncComponent for SysTray {
             })
         }
 
-
         let tray_items = FactoryVecDeque::<TrayItem>::builder()
             .launch(root.clone())
             .detach();
@@ -88,7 +82,7 @@ impl SimpleAsyncComponent for SysTray {
         AsyncComponentParts { model, widgets }
     }
 
-    async fn update(&mut self, message: Self::Input, _sender: AsyncComponentSender<Self>) -> () {
+    async fn update(&mut self, message: Self::Input, _sender: AsyncComponentSender<Self>) {
         match message {
             Event::Add(id, _item) => {
                 debug!("Tray item added {}", id);

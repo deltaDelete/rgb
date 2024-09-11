@@ -37,7 +37,7 @@ fn main() {
                 Ok(Some(true)) => {
                     let path = std::path::Path::new("./res/style.css");
                     let css_provider = gtk::CssProvider::new();
-                    let file = gio::File::for_path(&path);
+                    let file = gio::File::for_path(path);
                     css_provider.load_from_file(&file);
                     #[allow(deprecated)]
                     StyleContext::add_provider_for_display(
@@ -93,10 +93,8 @@ fn redirect_glib_logs() {
             if let Some(message) = message {
                 log!(target: "gtk", level, "[{}] {}", domain, message);
             }
-        } else {
-            if let Some(message) = message {
-                log!(target: "gtk", level, "{}", message)
-            }
+        } else if let Some(message) = message {
+            log!(target: "gtk", level, "{}", message)
         }
         LogWriterOutput::Handled
     });

@@ -1,8 +1,10 @@
 use crate::ext::ById;
-use crate::widgets::WorkspacesMessage;
-use crate::widgets::WorkspacesMessage::{Active, Add, Remove};
+use crate::widgets::HyprlandMessage;
+use crate::widgets::HyprlandMessage::{Active, Add, Remove};
 use hyprland::data::Workspace;
-use hyprland::event_listener::{MonitorEventData, WindowEventData, WorkspaceDestroyedEventData};
+use hyprland::event_listener::{
+    LayoutEvent, MonitorEventData, WindowEventData, WorkspaceDestroyedEventData,
+};
 use hyprland::shared::{WorkspaceId, WorkspaceType};
 use log::{error, info};
 use relm4::{ComponentSender, Worker};
@@ -12,7 +14,7 @@ pub struct HyprlandHandler;
 impl Worker for HyprlandHandler {
     type Init = ();
     type Input = ();
-    type Output = WorkspacesMessage;
+    type Output = HyprlandMessage;
 
     fn init(_init: Self::Init, _sender: ComponentSender<Self>) -> Self {
         _sender.input(());
@@ -56,7 +58,7 @@ impl HyprlandHandler {
             {
                 let sender = sender.clone();
                 listener.add_active_window_change_handler(move |it| {
-                    if let None = it {
+                    if it.is_none() {
                         error!("Got empty activewindow event expected some!");
                     }
                     Self::on_active_window_changed(sender.clone(), it);
@@ -70,6 +72,14 @@ impl HyprlandHandler {
                     info!("Monitor added. {}", it);
                 });
             }
+            {
+                let sender = sender.clone();
+                listener.add_keyboard_layout_change_handler(move |it| {
+                    if Self::on_keyboard_layout_changed(sender.clone(), it).is_none() {
+                        error!("Failed to send keyboard layout event!");
+                    }
+                });
+            }
             listener.start_listener().expect("");
         });
     }
@@ -81,9 +91,9 @@ impl HyprlandHandler {
         if let WorkspaceType::Regular(regular) = event_data.workspace {
             let id = regular
                 .parse::<WorkspaceId>()
-                .or_else(|it| {
+                .map_err(|it| {
                     error!("{}", it);
-                    Err(it)
+                    it
                 })
                 .ok()?;
             sender.output(Active { id }).ok()?;
@@ -110,9 +120,9 @@ impl HyprlandHandler {
         if let WorkspaceType::Regular(regular) = workspace_type {
             let id = regular
                 .parse::<WorkspaceId>()
-                .or_else(|it| {
+                .map_err(|it| {
                     error!("{}", it);
-                    Err(it)
+                    it
                 })
                 .ok()?;
             sender.output(Active { id }).ok()?;
@@ -127,9 +137,9 @@ impl HyprlandHandler {
         if let WorkspaceType::Regular(regular) = workspace_type {
             let id = regular
                 .parse::<WorkspaceId>()
-                .or_else(|it| {
+                .map_err(|it| {
                     error!("{}", it);
-                    Err(it)
+                    it
                 })
                 .ok()?;
             sender
@@ -146,12 +156,30 @@ impl HyprlandHandler {
         event_data: Option<WindowEventData>,
     ) -> Option<()> {
         sender
-            .output(WorkspacesMessage::ActiveWindow {
-                // Because hyprland-rs makes activewindow event to have None value 
+            .output(HyprlandMessage::ActiveWindow {
+                // Because hyprland-rs makes activewindow event to have None value
                 // when either title or class is empty, using this workaround
                 window: event_data,
             })
             .ok()?;
         Some(())
     }
+
+    fn on_keyboard_layout_changed(
+        sender: ComponentSender<HyprlandHandler>,
+        event_data: LayoutEvent,
+    ) -> Option<()> {
+        sender.output(event_data.into()).ok()?;
+        Some(())
+    }
 }
+
+impl From<LayoutEvent> for HyprlandMessage {
+    fn from(value: LayoutEvent) -> Self {
+        Self::SwitchKeyboardLayout {
+            keyboard_name: value.keyboard_name,
+            layout_name: value.layout_name,
+        }
+    }
+}
+

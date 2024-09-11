@@ -19,17 +19,17 @@ pub struct WorkspaceModel {
     is_active: bool,
 }
 
-impl Into<hyprland::data::Workspace> for WorkspaceModel {
-    fn into(self) -> hyprland::data::Workspace {
-        hyprland::data::Workspace {
-            id: self.id.clone(),
-            name: self.name.clone(),
-            monitor: self.monitor.clone(),
-            monitor_id: self.monitor_id.clone(),
-            windows: self.windows.clone(),
-            fullscreen: self.fullscreen.clone(),
-            last_window: self.last_window.clone(),
-            last_window_title: self.last_window_title.clone(),
+impl From<WorkspaceModel> for hyprland::data::Workspace {
+    fn from(value: WorkspaceModel) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+            monitor: value.monitor,
+            monitor_id: value.monitor_id,
+            windows: value.windows,
+            fullscreen: value.fullscreen,
+            last_window: value.last_window.clone(),
+            last_window_title: value.last_window_title.clone(),
         }
     }
 }
@@ -37,12 +37,12 @@ impl Into<hyprland::data::Workspace> for WorkspaceModel {
 impl From<hyprland::data::Workspace> for WorkspaceModel {
     fn from(value: hyprland::data::Workspace) -> Self {
         Self {
-            id: value.id.clone(),
+            id: value.id,
             name: value.name.clone(),
             monitor: value.monitor.clone(),
-            monitor_id: value.monitor_id.clone(),
-            windows: value.windows.clone(),
-            fullscreen: value.fullscreen.clone(),
+            monitor_id: value.monitor_id,
+            windows: value.windows,
+            fullscreen: value.fullscreen,
             last_window: value.last_window.clone(),
             last_window_title: value.last_window_title.clone(),
             is_active: false,
@@ -85,7 +85,7 @@ impl FactoryComponent for WorkspaceModel {
     fn update(&mut self, message: Self::Input, _sender: FactorySender<Self>) {
         match message {
             WorkspaceMessage::SwitchTo => {
-                if let Err(e) = dispatch!(Workspace,WorkspaceIdentifierWithSpecial::Id(self.id)) {
+                if let Err(e) = dispatch!(Workspace, WorkspaceIdentifierWithSpecial::Id(self.id)) {
                     error!("{e}");
                 };
             }

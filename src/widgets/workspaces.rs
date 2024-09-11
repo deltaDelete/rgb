@@ -1,17 +1,17 @@
+use crate::widgets::{WorkspaceMessage, WorkspaceModel};
+use gtk::prelude::OrientableExt;
+use gtk::prelude::WidgetExt;
+use gtk::EventControllerScrollFlags;
 use hyprland::data::Workspace as WorkspaceStruct;
 use hyprland::dispatch::{Dispatch, DispatchType, WorkspaceIdentifierWithSpecial};
 use hyprland::event_listener::WindowEventData;
 use hyprland::prelude::{HyprData, HyprDataActive, HyprDataVec};
 use log::error;
 use relm4::factory::FactoryVecDeque;
-use gtk::prelude::OrientableExt;
-use gtk::prelude::WidgetExt;
-use gtk::EventControllerScrollFlags;
+use relm4::gtk::glib::Propagation;
 use relm4::RelmWidgetExt;
 use relm4::{ComponentParts, ComponentSender, SimpleComponent};
 use std::ops::Neg;
-use relm4::gtk::glib::Propagation;
-use crate::widgets::{WorkspaceMessage, WorkspaceModel};
 
 pub struct WorkspacesModel {
     workspaces: FactoryVecDeque<WorkspaceModel>,
@@ -19,17 +19,29 @@ pub struct WorkspacesModel {
 
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
-pub enum WorkspacesMessage {
-    Add { workspace: WorkspaceStruct },
-    Remove { id: hyprland::shared::WorkspaceId },
-    Active { id: hyprland::shared::WorkspaceId },
+pub enum HyprlandMessage {
+    Add {
+        workspace: WorkspaceStruct,
+    },
+    Remove {
+        id: hyprland::shared::WorkspaceId,
+    },
+    Active {
+        id: hyprland::shared::WorkspaceId,
+    },
     Start,
-    ActiveWindow { window: Option<WindowEventData> }
+    ActiveWindow {
+        window: Option<WindowEventData>,
+    },
+    SwitchKeyboardLayout {
+        keyboard_name: String,
+        layout_name: String,
+    },
 }
 
 #[relm4::component(pub)]
 impl SimpleComponent for WorkspacesModel {
-    type Input = WorkspacesMessage;
+    type Input = HyprlandMessage;
     type Output = ();
     type Init = ();
 
@@ -74,23 +86,20 @@ impl SimpleComponent for WorkspacesModel {
         let workspaces = FactoryVecDeque::builder()
             .launch(gtk::Box::default())
             .detach();
-        
-        let model = WorkspacesModel {
-            workspaces,
-        };
 
+        let model = WorkspacesModel { workspaces };
 
         let workspaces_box = model.workspaces.widget();
         let widgets = view_output!();
 
         Self::init_workspaces(sender);
 
-        return ComponentParts { model, widgets };
+        ComponentParts { model, widgets }
     }
 
     fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
         match message {
-            WorkspacesMessage::Add { workspace } => {
+            HyprlandMessage::Add { workspace } => {
                 let mut guard = self.workspaces.guard();
                 let some_index = guard.iter().rposition(|it| it.id < workspace.id);
                 if let Some(index) = some_index {
@@ -100,7 +109,7 @@ impl SimpleComponent for WorkspacesModel {
                 }
                 guard.drop();
             }
-            WorkspacesMessage::Remove { id } => {
+            HyprlandMessage::Remove { id } => {
                 let mut guard = self.workspaces.guard();
                 let some_index = guard.iter().rposition(|it| it.id == id);
                 if let Some(index) = some_index {
@@ -108,7 +117,7 @@ impl SimpleComponent for WorkspacesModel {
                 }
                 guard.drop();
             }
-            WorkspacesMessage::Active { id } => {
+            HyprlandMessage::Active { id } => {
                 let guard = self.workspaces.guard();
                 for (index, _item) in guard.iter().enumerate() {
                     guard.send(index, WorkspaceMessage::ActiveIdChanged { id })
@@ -124,13 +133,13 @@ impl WorkspacesModel {
         let mut ws = hyprland::data::Workspaces::get().unwrap().to_vec();
         ws.sort_by(|a, b| a.id.cmp(&b.id));
         ws.iter().for_each(|it| {
-            sender.input(WorkspacesMessage::Add {
+            sender.input(HyprlandMessage::Add {
                 workspace: it.clone(),
             });
         });
         if let Ok(active_workspace) = hyprland::data::Workspace::get_active() {
-            sender.input(WorkspacesMessage::Active {
-                id: active_workspace.id
+            sender.input(HyprlandMessage::Active {
+                id: active_workspace.id,
             });
         }
     }

@@ -51,14 +51,9 @@ impl SimpleAsyncComponent for DateTime {
         AsyncComponentParts { model, widgets }
     }
 
-    async fn update(
-            &mut self,
-            _message: Self::Input,
-            _sender: relm4::AsyncComponentSender<Self>,
-        ) -> () {
-        match _message {
-            () => self.update_time()
-        };
+    async fn update(&mut self, _message: Self::Input, _sender: relm4::AsyncComponentSender<Self>) {
+        let () = _message;
+        self.update_time();
     }
 }
 
@@ -67,3 +62,4 @@ impl DateTime {
         self.label = chrono::Local::now().format(&self.format).to_string();
     }
 }
+

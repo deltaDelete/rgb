@@ -10,7 +10,6 @@ impl ById<WorkspaceId> for Option<Workspace> {
     fn get_by_id(id: i32) -> Option<Workspace> {
         let workspaces = hyprland::data::Workspaces::get().ok()?;
         let mut iter = workspaces.iter();
-        let item = iter.find(|&it| it.id == id).and_then(|it| Some(it.clone()));
-        return item;
+        iter.find(|&it| it.id == id).cloned()
     }
 }

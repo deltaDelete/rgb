@@ -1,10 +1,11 @@
 use crate::app_module::AppMessage::UpdateCss;
-use crate::ext::LayerShellExt;
-use crate::widgets::{DateTime, Focused, PowerMenu, SysTray, WorkspacesMessage, WorkspacesModel};
+use crate::widgets::{
+    DateTime, Focused, HyprlandMessage, Language, PowerMenu, SysTray, WorkspacesModel,
+};
 use crate::workers::HyprlandHandler;
 use gtk::gio;
+use gtk::prelude::WidgetExt;
 use gtk::prelude::{BoxExt, GtkWindowExt, OrientableExt};
-use gtk::prelude::{DisplayExt, ListModelExt, WidgetExt};
 use gtk::{gdk, StyleContext};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use log::error;
@@ -29,6 +30,7 @@ pub struct AppModel {
     power_menu: Controller<PowerMenu>,
     sys_tray: AsyncController<SysTray>,
     datetime: AsyncController<DateTime>,
+    language: AsyncController<Language>,
 }
 
 struct CssRelated {
@@ -76,6 +78,7 @@ impl SimpleAsyncComponent for AppModel {
                     set_orientation: gtk::Orientation::Horizontal,
                     set_spacing: 8,
 
+                    model.language.widget(),
                     model.sys_tray.widget(),
                     model.datetime.widget(),
                     model.power_menu.widget(),
@@ -94,25 +97,35 @@ impl SimpleAsyncComponent for AppModel {
         let power_menu = PowerMenu::builder().launch(()).detach();
         let sys_tray = SysTray::builder().launch(()).detach();
         let datetime = DateTime::builder().launch(()).detach();
+        let language = Language::builder().launch(()).detach();
 
+        let language_sender = language.sender().clone();
         let workspaces_sender = workspaces.sender().clone();
         let focused_sender = focused.sender().clone();
         let handler: WorkerController<HyprlandHandler> = HyprlandHandler::builder()
             .detach_worker(())
             .forward(&workspaces_sender, move |message| {
                 let message_clone = message.clone();
-                if let WorkspacesMessage::ActiveWindow { .. } = message_clone {
-                    if let Err(e) = focused_sender.send(message_clone) {
-                        error!("Error sending message to Focused: {:?}", e);
+                match message_clone {
+                    HyprlandMessage::ActiveWindow { .. } => {
+                        if let Err(e) = focused_sender.send(message_clone) {
+                            error!("Error sending message to Focused: {:?}", e);
+                        }
                     }
-                }
-                return message;
+                    HyprlandMessage::SwitchKeyboardLayout { .. } => {
+                        if let Err(e) = language_sender.send(message_clone) {
+                            error!("Error sending message to Language: {:?}", e);
+                        }
+                    }
+                    _ => {}
+                };
+                message
             });
 
         let css_related = {
             let path = Path::new("./res/style.css");
             let css_provider = gtk::CssProvider::new();
-            let file = gio::File::for_path(&path);
+            let file = gio::File::for_path(path);
             css_provider.load_from_file(&file);
             #[allow(deprecated)]
             StyleContext::add_provider_for_display(
@@ -132,6 +145,7 @@ impl SimpleAsyncComponent for AppModel {
             power_menu,
             sys_tray,
             datetime,
+            language,
         };
 
         let widgets = view_output!();
@@ -148,16 +162,8 @@ impl SimpleAsyncComponent for AppModel {
         root.set_margin(Edge::Top, 12);
         root.set_margin(Edge::Bottom, 12);
         root.set_keyboard_mode(KeyboardMode::OnDemand);
-        root.set_monitor_by_connector("DP-1");
+        // root.set_monitor_by_connector("DP-1");
         root.auto_exclusive_zone_enable();
-
-        {
-            let monitors = gdk::Display::default().unwrap().monitors();
-            let root_clone = root.clone();
-            monitors.connect_items_changed(move |_this, _position, _removed, _added| {
-                root_clone.set_monitor_by_connector("DP-1");
-            });
-        }
 
         AsyncComponentParts { model, widgets }
     }

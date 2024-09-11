@@ -1,9 +1,9 @@
-use crate::widgets::WorkspacesMessage;
-use hyprland::prelude::HyprDataActiveOptional;
-use hyprland::shared::Address;
+use crate::widgets::HyprlandMessage;
 use gtk::gdk::Display;
 use gtk::prelude::{OrientableExt, WidgetExt};
 use gtk::Orientation;
+use hyprland::prelude::HyprDataActiveOptional;
+use hyprland::shared::Address;
 use relm4::{ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 use std::ops::Not;
 
@@ -26,14 +26,14 @@ impl Default for Focused {
             show: false,
             has_title: false,
             has_icon: false,
-            icon_theme: gtk::IconTheme::for_display(&Display::default().unwrap())
+            icon_theme: gtk::IconTheme::for_display(&Display::default().unwrap()),
         }
     }
 }
 
 #[relm4::component(pub)]
 impl SimpleComponent for Focused {
-    type Input = WorkspacesMessage;
+    type Input = HyprlandMessage;
     type Output = ();
     type Init = ();
 
@@ -87,26 +87,23 @@ impl SimpleComponent for Focused {
         ComponentParts { model, widgets }
     }
 
-    fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) -> () {
-        match message {
-            WorkspacesMessage::ActiveWindow { window } => {
-                if let Some(window) = window {
-                    self.title = window.window_title.trim().into();
-                    self.address = window.window_address;
-                    self.icon_name = window.window_class;
-                } else {
-                    let result = hyprland::data::Client::get_active()
-                        .expect("Expected to get active")
-                        .expect("Active was None");
-                    self.title = result.title.trim().into();
-                    self.icon_name = result.class;
-                    self.address = result.address;
-                }
-                self.has_icon = self.icon_theme.has_icon(self.icon_name.as_str());
-                self.has_title = self.title.trim().is_empty().not();
-                self.show = self.has_title || self.has_icon;
+    fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
+        if let HyprlandMessage::ActiveWindow { window } = message {
+            if let Some(window) = window {
+                self.title = window.window_title.trim().into();
+                self.address = window.window_address;
+                self.icon_name = window.window_class;
+            } else {
+                let result = hyprland::data::Client::get_active()
+                    .expect("Expected to get active")
+                    .expect("Active was None");
+                self.title = result.title.trim().into();
+                self.icon_name = result.class;
+                self.address = result.address;
             }
-            _ => {}
+            self.has_icon = self.icon_theme.has_icon(self.icon_name.as_str());
+            self.has_title = self.title.trim().is_empty().not();
+            self.show = self.has_title || self.has_icon;
         };
     }
 }
