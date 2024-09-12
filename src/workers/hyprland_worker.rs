@@ -144,7 +144,7 @@ impl HyprlandHandler {
                 .ok()?;
             sender
                 .output(Add {
-                    workspace: Option::<Workspace>::get_by_id(id).unwrap(),
+                    workspace: Option::<Workspace>::get_by_id(id)?,
                 })
                 .ok()?;
         }

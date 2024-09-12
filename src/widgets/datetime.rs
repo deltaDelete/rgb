@@ -1,10 +1,12 @@
 use gtk::prelude::WidgetExt;
 use relm4::prelude::AsyncComponentParts;
 use relm4::prelude::SimpleAsyncComponent;
+use tokio::task::JoinHandle;
 
 pub struct DateTime {
     label: String,
     format: String,
+    task: tokio::task::JoinHandle<()>,
 }
 
 #[relm4::component(pub async)]
@@ -33,20 +35,24 @@ impl SimpleAsyncComponent for DateTime {
         let time = chrono::Local::now();
         let format = "%H:%M:%S %d.%m.%Y";
         let label = time.format(format).to_string();
+
+        let task = {
+            let sender_clone = _sender.clone();
+            relm4::spawn(async move {
+                let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
+                loop {
+                    interval.tick().await; // Wait for the next tick
+                    sender_clone.input(());
+                }
+            })
+        };
+
         let model = Self {
             format: format.to_string(),
             label,
+            task
         };
         let widgets = view_output!();
-
-        let sender_clone = _sender.clone();
-        tokio::spawn(async move {
-            let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
-            loop {
-                interval.tick().await; // Wait for the next tick
-                sender_clone.input(());
-            }
-        });
 
         AsyncComponentParts { model, widgets }
     }

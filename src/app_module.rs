@@ -1,6 +1,5 @@
-use crate::app_module::AppMessage::UpdateCss;
 use crate::widgets::{
-    DateTime, Focused, HyprlandMessage, Language, PowerMenu, SysTray, WorkspacesModel,
+    DateTime, Focused, HyprlandMessage, Language, LanguageInit, PowerMenu, SysTray, WorkspacesModel,
 };
 use crate::workers::HyprlandHandler;
 use gtk::gio;
@@ -19,30 +18,21 @@ use relm4::ComponentController;
 use relm4::Controller;
 use relm4::RelmWidgetExt;
 use relm4::WorkerController;
-use std::path::Path;
 
+#[allow(dead_code)]
 pub struct AppModel {
     workspaces: Controller<WorkspacesModel>,
     focused: Controller<Focused>,
-    #[allow(dead_code)]
     handler: WorkerController<HyprlandHandler>,
-    css_related: CssRelated,
     power_menu: Controller<PowerMenu>,
     sys_tray: AsyncController<SysTray>,
     datetime: AsyncController<DateTime>,
     language: AsyncController<Language>,
 }
 
-struct CssRelated {
-    css_provider: gtk::CssProvider,
-    file: gio::File,
-}
-
 #[derive(Debug)]
 #[allow(dead_code)]
-pub enum AppMessage {
-    UpdateCss,
-}
+pub enum AppMessage {}
 
 #[relm4::component(pub async)]
 impl SimpleAsyncComponent for AppModel {
@@ -97,7 +87,11 @@ impl SimpleAsyncComponent for AppModel {
         let power_menu = PowerMenu::builder().launch(()).detach();
         let sys_tray = SysTray::builder().launch(()).detach();
         let datetime = DateTime::builder().launch(()).detach();
-        let language = Language::builder().launch(()).detach();
+        let language = Language::builder()
+            .launch(LanguageInit::new(
+                "turing-gaming-keyboard-turing-gaming-keyboard",
+            ))
+            .detach();
 
         let language_sender = language.sender().clone();
         let workspaces_sender = workspaces.sender().clone();
@@ -122,26 +116,10 @@ impl SimpleAsyncComponent for AppModel {
                 message
             });
 
-        let css_related = {
-            let path = Path::new("./res/style.css");
-            let css_provider = gtk::CssProvider::new();
-            let file = gio::File::for_path(path);
-            css_provider.load_from_file(&file);
-            #[allow(deprecated)]
-            StyleContext::add_provider_for_display(
-                &gdk::Display::default().unwrap(),
-                &css_provider,
-                800,
-            );
-
-            CssRelated { css_provider, file }
-        };
-
         let model = Self {
             workspaces, // popover: None,
             focused,
             handler,
-            css_related,
             power_menu,
             sys_tray,
             datetime,
@@ -168,13 +146,5 @@ impl SimpleAsyncComponent for AppModel {
         AsyncComponentParts { model, widgets }
     }
 
-    async fn update(&mut self, message: Self::Input, _sender: AsyncComponentSender<Self>) {
-        match message {
-            UpdateCss => {
-                self.css_related
-                    .css_provider
-                    .load_from_file(&self.css_related.file);
-            }
-        }
-    }
+    async fn update(&mut self, _message: Self::Input, _sender: AsyncComponentSender<Self>) {}
 }

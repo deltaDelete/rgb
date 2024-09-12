@@ -10,7 +10,7 @@ $inactive: rgb(156, 156, 156);
 $inactive-dark: rgb(38, 38, 38);
 $bg-hover: rgba($active-dark, 0.5);
 $fg-hover: rgba($active, 1);
-$border-hover: rgba($active, 0.95);
+$border-color-hover: rgba($active, 0.95);
 $border-color-default: rgba(255, 255, 255, 255);
 $bg-active: rgba($active, 0.5);
 
@@ -19,7 +19,7 @@ $size-default: 1rem;
 $size-large: 2rem;
 $border-radius-default: 1.0rem + 0.25rem;
 $border-default: solid 0.0125rem $border-color-default;
-$border-hover: solid 0.1rem $border-hover;
+$border-hover: solid 0.1rem $border-color-hover;
 $border-not-hover: solid 0.1rem transparent;
 
 $shadow-default: 0.25rem 0.25rem 1rem rgba(black, 0.2),
@@ -27,13 +27,25 @@ $shadow-default: 0.25rem 0.25rem 1rem rgba(black, 0.2),
 0.25rem -0.25rem 1rem rgba(black, 0.2),
 -0.25rem -0.25rem 1rem rgba(black, 0.2);
 
-$transition-default: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+$transition-default: border-color 50ms ease-in,
+  border-width 50ms ease-in,
+  background-color 100ms ease-in,
+  box-shadow 50ms ease-in;
 
 @mixin hoverable() {
   & {
     &:hover {
       background-color: $bg-hover;
       border: $border-hover;
+    }
+  }
+}
+
+@mixin hoverable_pseudoborder() {
+  & {
+    &:hover {
+      background-color: $bg-hover;
+      box-shadow: inset 0 0 0 0.1rem $border-color-hover;
     }
   }
 }
@@ -45,6 +57,18 @@ $transition-default: border-color 50ms ease-in, border-width 50ms ease-in, backg
     &:active {
       background-color: $bg-active;
       border: $border-hover;
+      transform: scale(0.9);
+    }
+  }
+}
+
+@mixin activatable_pseudoborder() {
+  & {
+    transition: transform 50ms ease-in-out, $transition-default;
+
+    &:active {
+      background-color: $bg-active;
+      box-shadow: inset 0 0 0 0.1rem $border-color-hover;
       transform: scale(0.9);
     }
   }
@@ -68,11 +92,11 @@ window, button, modelbutton {
   padding: $size-default;
 
   &.hoverable {
-    margin: 0.0125rem;
+    //margin: 0.0125rem;
     transition: $transition-default;
 
-    @include hoverable;
-    @include activatable;
+    @include hoverable_pseudoborder;
+    @include activatable_pseudoborder;
   }
 
   &.workspaces {

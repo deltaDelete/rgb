@@ -2,7 +2,7 @@
   font-family: "JetBrains Mono", monospace;
   font-size: 10pt;
   font-weight: bold;
-  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 
 window, button, modelbutton {
@@ -16,17 +16,18 @@ window, button, modelbutton {
   padding: 1rem;
 }
 .module.hoverable {
-  margin: 0.0125rem;
-  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
-  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .module.hoverable:hover {
   background-color: rgba(0, 45, 102, 0.5);
-  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  box-shadow: inset 0 0 0 0.1rem rgba(102, 170, 255, 0.95);
+}
+.module.hoverable {
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .module.hoverable:active {
   background-color: rgba(102, 170, 255, 0.5);
-  border: solid 0.1rem rgba(102, 170, 255, 0.95);
+  box-shadow: inset 0 0 0 0.1rem rgba(102, 170, 255, 0.95);
   transform: scale(0.9);
 }
 .module.workspaces {
@@ -38,8 +39,7 @@ window, button, modelbutton {
   border-radius: 1.25rem;
   padding-left: 1.25rem;
   padding-right: 1.25rem;
-  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
-  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .module.workspaces .workspaces__workspace.active {
   background-color: rgba(102, 170, 255, 0.2);
@@ -50,13 +50,16 @@ window, button, modelbutton {
   background-color: rgba(0, 45, 102, 0.5);
   border: solid 0.1rem rgba(102, 170, 255, 0.95);
 }
+.module.workspaces .workspaces__workspace {
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
+}
 .module.workspaces .workspaces__workspace:active {
   background-color: rgba(102, 170, 255, 0.5);
   border: solid 0.1rem rgba(102, 170, 255, 0.95);
   transform: scale(0.9);
 }
 .module.focused {
-  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .module.focused .focused__title {
   color: #66aaff;
@@ -76,12 +79,14 @@ window, button, modelbutton {
   border: solid 0.1rem transparent;
   border-radius: 1.25rem;
   padding: 0.5rem 1rem;
-  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
-  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .module.systray .systray__icon:hover {
   background-color: rgba(0, 45, 102, 0.5);
   border: solid 0.1rem rgba(102, 170, 255, 0.95);
+}
+.module.systray .systray__icon {
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .module.systray .systray__icon:active {
   background-color: rgba(102, 170, 255, 0.5);
@@ -100,12 +105,14 @@ window, button, modelbutton {
   border: solid 0.1rem transparent;
   border-radius: 0.75rem;
   padding: 0.5rem 1rem;
-  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
-  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in;
+  transition: border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .menu modelbutton:hover {
   background-color: rgba(0, 45, 102, 0.5);
   border: solid 0.1rem rgba(102, 170, 255, 0.95);
+}
+.menu modelbutton {
+  transition: transform 50ms ease-in-out, border-color 50ms ease-in, border-width 50ms ease-in, background-color 100ms ease-in, box-shadow 50ms ease-in;
 }
 .menu modelbutton:active {
   background-color: rgba(102, 170, 255, 0.5);

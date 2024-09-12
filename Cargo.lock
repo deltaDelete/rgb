@@ -1403,6 +1403,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "language-tags"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d4345964bb142484797b161f473a503a434de77149dd8c7427788c6e13379388"
+
+[[package]]
 name = "libc"
 version = "0.2.158"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1824,15 +1830,18 @@ dependencies = [
  "gtk4",
  "gtk4-layer-shell",
  "hyprland",
+ "language-tags",
  "log",
  "notify",
  "relm4",
  "relm4-components",
  "relm4-icons",
  "serde",
+ "serde_json",
  "smithay-client-toolkit",
  "system-tray",
  "tokio",
+ "xkb-data",
 ]
 
 [[package]]
@@ -2009,6 +2018,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99fce0ffe7310761ca6bf9faf5115afbc19688edd00171d81b1bb1b116c63e09"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-xml-rs"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb3aa78ecda1ebc9ec9847d5d3aba7d618823446a049ba2491940506da6e2782"
+dependencies = [
+ "log",
+ "serde",
+ "thiserror",
+ "xml-rs",
 ]
 
 [[package]]
@@ -2812,6 +2833,16 @@ checksum = "ec1cdab258fb55c0da61328dc52c8764709b249011b2cad0454c72f0bf10a1f6"
 dependencies = [
  "libc",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "xkb-data"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddbaf7dc9e1a13a8a6dd4beb794d463ae16d150879092c757f4aea2d17b81305"
+dependencies = [
+ "serde",
+ "serde-xml-rs",
 ]
 
 [[package]]

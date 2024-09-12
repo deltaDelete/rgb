@@ -32,19 +32,19 @@ fn main() {
             "Reload css of running instance",
             None,
         );
-        gtk_app.connect_command_line(|application, options| {
+        let css_provider = gtk::CssProvider::new();
+        #[allow(deprecated)]
+        StyleContext::add_provider_for_display(
+            &gdk::Display::default().unwrap(),
+            &css_provider,
+            800,
+        );
+        gtk_app.connect_command_line(move |application, options| {
             match options.options_dict().lookup::<bool>("reload-style") {
                 Ok(Some(true)) => {
                     let path = std::path::Path::new("./res/style.css");
-                    let css_provider = gtk::CssProvider::new();
                     let file = gio::File::for_path(path);
                     css_provider.load_from_file(&file);
-                    #[allow(deprecated)]
-                    StyleContext::add_provider_for_display(
-                        &gdk::Display::default().unwrap(),
-                        &css_provider,
-                        800,
-                    );
                     info!("CSS reloaded!");
                 }
                 Err(e) => {
