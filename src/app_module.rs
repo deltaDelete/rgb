@@ -2,10 +2,8 @@ use crate::widgets::{
     DateTime, Focused, HyprlandMessage, Language, LanguageInit, PowerMenu, SysTray, WorkspacesModel,
 };
 use crate::workers::HyprlandHandler;
-use gtk::gio;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::{BoxExt, GtkWindowExt, OrientableExt};
-use gtk::{gdk, StyleContext};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use log::error;
 use relm4::prelude::{

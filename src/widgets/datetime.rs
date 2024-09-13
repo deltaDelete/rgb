@@ -3,6 +3,7 @@ use relm4::prelude::AsyncComponentParts;
 use relm4::prelude::SimpleAsyncComponent;
 use tokio::task::JoinHandle;
 
+#[allow(dead_code)]
 pub struct DateTime {
     label: String,
     format: String,
@@ -50,7 +51,7 @@ impl SimpleAsyncComponent for DateTime {
         let model = Self {
             format: format.to_string(),
             label,
-            task
+            task,
         };
         let widgets = view_output!();
 
@@ -68,4 +69,3 @@ impl DateTime {
         self.label = chrono::Local::now().format(&self.format).to_string();
     }
 }
-
