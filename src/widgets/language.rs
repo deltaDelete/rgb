@@ -3,12 +3,11 @@ use crate::widgets::HyprlandMessage;
 use gtk::prelude::{ButtonExt, WidgetExt};
 use hyprland::data::Keyboard;
 use hyprland::shared::HyprData;
-use log::{error, info};
+use log::error;
 use relm4::component::AsyncComponentParts;
 use relm4::component::SimpleAsyncComponent;
-use relm4::{AsyncComponentSender, RelmWidgetExt};
+use relm4::AsyncComponentSender;
 use std::sync::{Arc, Mutex};
-use tokio::task::JoinHandle;
 
 #[derive(Debug, Clone)]
 pub struct Language {

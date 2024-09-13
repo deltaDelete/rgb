@@ -1,7 +1,6 @@
 use gtk::prelude::WidgetExt;
 use relm4::prelude::AsyncComponentParts;
 use relm4::prelude::SimpleAsyncComponent;
-use tokio::task::JoinHandle;
 
 #[allow(dead_code)]
 pub struct DateTime {
