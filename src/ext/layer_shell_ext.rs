@@ -25,4 +25,3 @@ pub trait LayerShellExt: IsA<Window> {
 }
 
 impl<T: IsA<gtk::Window>> LayerShellExt for T {}
-

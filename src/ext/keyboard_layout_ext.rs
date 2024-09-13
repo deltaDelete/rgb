@@ -26,11 +26,10 @@ impl KeyboardLayoutEx for xkb_data::KeyboardLayout {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use log::{info, LevelFilter};
     use crate::ext::KeyboardLayoutEx;
+    use log::{info, LevelFilter};
 
     static INIT: std::sync::Once = std::sync::Once::new();
 

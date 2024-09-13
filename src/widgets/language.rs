@@ -104,9 +104,10 @@ impl Language {
         let keyboard = devices.keyboards.iter().find(|it| it.name == device_name);
         if let Ok(mut device) = self.device.lock() {
             *device = keyboard.cloned();
-            let layout = keyboard.cloned().and_then(|it| {
-                xkb_data::KeyboardLayout::find(&it.active_keymap)
-            }).and_then(|it| it.localized());
+            let layout = keyboard
+                .cloned()
+                .and_then(|it| xkb_data::KeyboardLayout::find(&it.active_keymap))
+                .and_then(|it| it.localized());
             self.set_layout(layout);
         }
         Some(())

@@ -14,4 +14,3 @@ where
         f(self);
     }
 }
-

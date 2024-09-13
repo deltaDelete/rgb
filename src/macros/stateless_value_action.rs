@@ -1,8 +1,8 @@
-use std::marker::PhantomData;
-use gtk::gio;
 use gio::SimpleAction;
+use gtk::gio;
 use gtk::prelude::{FromVariant, StaticVariantType, ToVariant};
 use relm4::actions::{ActionName, RelmAction};
+use std::marker::PhantomData;
 
 #[macro_export]
 /// Create a new type that implements [`ActionName`] without state but with value.
@@ -26,9 +26,7 @@ where
     Name::State: ToVariant + FromVariant,
     Name::Target: ToVariant + FromVariant,
 {
-    fn new_stateless_with_target_value<
-        Callback: Fn(&gio::SimpleAction, Name::Target) + 'static,
-    >(
+    fn new_stateless_with_target_value<Callback: Fn(&gio::SimpleAction, Name::Target) + 'static>(
         start_value: &Name::State,
         callback: Callback,
     ) -> Self;
@@ -39,9 +37,7 @@ where
     Name::State: ToVariant + FromVariant,
     Name::Target: ToVariant + FromVariant,
 {
-    fn new_stateless_with_target_value<
-        Callback: Fn(&SimpleAction, Name::Target) + 'static,
-    >(
+    fn new_stateless_with_target_value<Callback: Fn(&SimpleAction, Name::Target) + 'static>(
         _start_value: &Name::State,
         callback: Callback,
     ) -> Self {

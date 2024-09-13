@@ -44,20 +44,22 @@ impl SimpleComponent for PowerMenu {
         let model = Self;
         let widgets = view_output!();
 
-        let action: RelmAction<Exec> = RelmAction::new_with_target_value(|_action, value: String| {
-            info!("{:?}", value);
-            match std::process::Command::new("bash")
-                .arg("-c")
-                .arg(value.clone())
-                .spawn() {
-                Ok(_std) => {
-                    info!("Successfully run command: {:?}", value);
-                }
-                Err(err) => {
-                    error!("Error running command: {:?}\n{}", value, err);
-                }
-            };
-        });
+        let action: RelmAction<Exec> =
+            RelmAction::new_with_target_value(|_action, value: String| {
+                info!("{:?}", value);
+                match std::process::Command::new("bash")
+                    .arg("-c")
+                    .arg(value.clone())
+                    .spawn()
+                {
+                    Ok(_std) => {
+                        info!("Successfully run command: {:?}", value);
+                    }
+                    Err(err) => {
+                        error!("Error running command: {:?}\n{}", value, err);
+                    }
+                };
+            });
 
         let mut group = RelmActionGroup::<ShellActionGroup>::new();
         group.add_action(action);

@@ -182,4 +182,3 @@ impl From<LayoutEvent> for HyprlandMessage {
         }
     }
 }
-
