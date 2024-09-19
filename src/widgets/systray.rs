@@ -40,7 +40,7 @@ impl SimpleAsyncComponent for SysTray {
         root: Self::Root,
         sender: AsyncComponentSender<Self>,
     ) -> AsyncComponentParts<Self> {
-        let client = Client::new("ru.deltadelete.regbar")
+        let client = Client::new("ru.deltadelete.rgb")
             .await
             .expect("Another program is serving system tray!");
         let client = Rc::new(client);

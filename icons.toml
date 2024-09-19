@@ -1,5 +1,5 @@
-app_id = "ru.deltadelete.regbar"
-base_resource_path = "/ru/deltadelete/regbar/"
+app_id = "ru.deltadelete.rgv"
+base_resource_path = "/ru/deltadelete/rgb/"
 
 icons = ["plus", "minus"]
 

@@ -4,6 +4,7 @@ use gtk::glib::{LogLevel, LogWriterOutput};
 use gtk::prelude::{ApplicationCommandLineExt, ApplicationExt};
 use gtk::{gdk, gio, glib, StyleContext};
 use log::{error, info, log};
+use relm4::once_cell::sync::Lazy;
 use relm4::RelmApp;
 
 mod app_module;
@@ -12,10 +13,16 @@ mod macros;
 mod widgets;
 mod workers;
 
-const APP_ID: &str = "ru.deltadelete.regbar";
+const APP_ID: &str = "ru.deltadelete.rgb";
+
+static STYLE: Lazy<gio::File> = Lazy::new(|| {
+    let path = std::path::Path::new("./res/style.css");
+    gio::File::for_path(path)
+});
 
 fn main() {
     env_logger::builder()
+        .filter(None, log::LevelFilter::Debug)
         .target(env_logger::Target::Stdout)
         .init();
     info!("Hello, world!");
@@ -33,6 +40,8 @@ fn main() {
             None,
         );
         let css_provider = gtk::CssProvider::new();
+        css_provider.load_from_file(&*STYLE);
+
         #[allow(deprecated)]
         StyleContext::add_provider_for_display(
             &gdk::Display::default().unwrap(),
@@ -42,9 +51,7 @@ fn main() {
         gtk_app.connect_command_line(move |application, options| {
             match options.options_dict().lookup::<bool>("reload-style") {
                 Ok(Some(true)) => {
-                    let path = std::path::Path::new("./res/style.css");
-                    let file = gio::File::for_path(path);
-                    css_provider.load_from_file(&file);
+                    css_provider.load_from_file(&*STYLE);
                     info!("CSS reloaded!");
                 }
                 Err(e) => {
@@ -66,7 +73,7 @@ fn initialize_icons() {
     relm4_icons::initialize_icons();
     if let Some(display) = gtk::gdk::Display::default() {
         let theme = gtk::IconTheme::for_display(&display);
-        theme.add_resource_path("/ru/deltadelete/regbar/icons");
+        theme.add_resource_path("/ru/deltadelete/rgb/icons");
     }
 }
 

@@ -1,7 +1,9 @@
+use crate::ext::MonitorExt;
 use crate::widgets::{
     DateTime, Focused, HyprlandMessage, Language, LanguageInit, PowerMenu, SysTray, WorkspacesModel,
 };
 use crate::workers::HyprlandHandler;
+use gtk::gdk;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::{BoxExt, GtkWindowExt, OrientableExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
@@ -19,6 +21,7 @@ use relm4::WorkerController;
 
 #[allow(dead_code)]
 pub struct AppModel {
+    monitor: Option<gdk::Monitor>,
     workspaces: Controller<WorkspacesModel>,
     focused: Controller<Focused>,
     handler: WorkerController<HyprlandHandler>,
@@ -30,7 +33,9 @@ pub struct AppModel {
 
 #[derive(Debug)]
 #[allow(dead_code)]
-pub enum AppMessage {}
+pub enum AppMessage {
+    SetMonitor { monitor: Option<String> },
+}
 
 #[relm4::component(pub async)]
 impl SimpleAsyncComponent for AppModel {
@@ -42,6 +47,22 @@ impl SimpleAsyncComponent for AppModel {
         gtk::Window {
             set_title: Some("Fancy title!"),
             set_decorated: true,
+
+            init_layer_shell: (),
+            set_layer: Layer::Top,
+            set_anchor: (Edge::Left, true),
+            set_anchor: (Edge::Top, true),
+            set_anchor: (Edge::Right, true),
+            set_namespace: "rgb",
+            set_height_request: 50,
+            set_margin: (Edge::Left, 20),
+            set_margin: (Edge::Right, 20),
+            set_margin: (Edge::Top, 12),
+            set_margin: (Edge::Bottom, 12),
+            set_keyboard_mode: KeyboardMode::OnDemand,
+            auto_exclusive_zone_enable: (),
+            #[watch]
+            set_monitor: &model.monitor.clone().unwrap_or_else(gdk::Monitor::first),
 
             gtk::CenterBox {
                 set_expand: true,
@@ -94,6 +115,7 @@ impl SimpleAsyncComponent for AppModel {
         let language_sender = language.sender().clone();
         let workspaces_sender = workspaces.sender().clone();
         let focused_sender = focused.sender().clone();
+        let sender = _sender.clone();
         let handler: WorkerController<HyprlandHandler> = HyprlandHandler::builder()
             .detach_worker(())
             .forward(&workspaces_sender, move |message| {
@@ -109,12 +131,21 @@ impl SimpleAsyncComponent for AppModel {
                             error!("Error sending message to Language: {:?}", e);
                         }
                     }
+                    HyprlandMessage::RemoveMonitor { .. } => {
+                        sender.input(AppMessage::SetMonitor { monitor: None })
+                    }
+                    HyprlandMessage::AddMonitor { monitor } => {
+                        sender.input(AppMessage::SetMonitor {
+                            monitor: Some(monitor),
+                        })
+                    }
                     _ => {}
                 };
                 message
             });
 
         let model = Self {
+            monitor: gdk::Monitor::for_connector("DP-1"),
             workspaces, // popover: None,
             focused,
             handler,
@@ -126,23 +157,15 @@ impl SimpleAsyncComponent for AppModel {
 
         let widgets = view_output!();
 
-        root.init_layer_shell();
-        root.set_layer(Layer::Top);
-        root.set_anchor(Edge::Left, true);
-        root.set_anchor(Edge::Top, true);
-        root.set_anchor(Edge::Right, true);
-        root.set_namespace("regbar");
-        root.set_height_request(50);
-        root.set_margin(Edge::Left, 20);
-        root.set_margin(Edge::Right, 20);
-        root.set_margin(Edge::Top, 12);
-        root.set_margin(Edge::Bottom, 12);
-        root.set_keyboard_mode(KeyboardMode::OnDemand);
-        // root.set_monitor_by_connector("DP-1");
-        root.auto_exclusive_zone_enable();
-
         AsyncComponentParts { model, widgets }
     }
 
-    async fn update(&mut self, _message: Self::Input, _sender: AsyncComponentSender<Self>) {}
+    async fn update(&mut self, _message: Self::Input, _sender: AsyncComponentSender<Self>) {
+        let AppMessage::SetMonitor { monitor } = _message;
+        if let Some(monitor) = monitor {
+            self.monitor = gtk::gdk::Monitor::for_connector(&monitor);
+        } else {
+            self.monitor = None;
+        }
+    }
 }

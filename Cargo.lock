@@ -1822,29 +1822,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "regbar"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "env_logger",
- "gtk4",
- "gtk4-layer-shell",
- "hyprland",
- "language-tags",
- "log",
- "notify",
- "relm4",
- "relm4-components",
- "relm4-icons",
- "serde",
- "serde_json",
- "smithay-client-toolkit",
- "system-tray",
- "tokio",
- "xkb-data",
-]
-
-[[package]]
 name = "regex"
 version = "1.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1928,6 +1905,29 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.76",
+]
+
+[[package]]
+name = "rgb"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "env_logger",
+ "gtk4",
+ "gtk4-layer-shell",
+ "hyprland",
+ "language-tags",
+ "log",
+ "notify",
+ "relm4",
+ "relm4-components",
+ "relm4-icons",
+ "serde",
+ "serde_json",
+ "smithay-client-toolkit",
+ "system-tray",
+ "tokio",
+ "xkb-data",
 ]
 
 [[package]]

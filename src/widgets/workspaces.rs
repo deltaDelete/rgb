@@ -37,6 +37,12 @@ pub enum HyprlandMessage {
         keyboard_name: String,
         layout_name: String,
     },
+    AddMonitor {
+        monitor: String,
+    },
+    RemoveMonitor {
+        monitor: String,
+    },
 }
 
 #[relm4::component(pub)]

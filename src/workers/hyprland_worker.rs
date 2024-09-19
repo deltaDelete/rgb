@@ -6,7 +6,7 @@ use hyprland::event_listener::{
     LayoutEvent, MonitorEventData, WindowEventData, WorkspaceDestroyedEventData,
 };
 use hyprland::shared::{WorkspaceId, WorkspaceType};
-use log::{error, info};
+use log::{debug, error};
 use relm4::{ComponentSender, Worker};
 
 pub struct HyprlandHandler;
@@ -34,25 +34,25 @@ impl HyprlandHandler {
             {
                 let sender = sender.clone();
                 listener.add_workspace_change_handler(move |it| {
-                    Self::on_workspace_change(sender.clone(), it);
+                    Self::on_workspace_changed(&sender, it);
                 });
             }
             {
                 let sender = sender.clone();
                 listener.add_workspace_added_handler(move |it| {
-                    Self::on_workspace_added(sender.clone(), it);
+                    Self::on_workspace_added(&sender, it);
                 });
             }
             {
                 let sender = sender.clone();
                 listener.add_workspace_destroy_handler(move |it| {
-                    Self::on_workspace_destroyed(sender.clone(), it);
+                    Self::on_workspace_destroyed(&sender, it);
                 });
             }
             {
                 let sender = sender.clone();
                 listener.add_active_monitor_change_handler(move |it| {
-                    Self::on_active_monitor_changed(sender.clone(), it);
+                    Self::on_active_monitor_changed(&sender, it);
                 });
             }
             {
@@ -61,21 +61,29 @@ impl HyprlandHandler {
                     if it.is_none() {
                         error!("Got empty activewindow event expected some!");
                     }
-                    Self::on_active_window_changed(sender.clone(), it);
+                    Self::on_active_window_changed(&sender, it);
                 });
             }
             {
-                listener.add_monitor_removed_handler(|it| {
-                    info!("Monitor removed. {}", it);
+                let sender = sender.clone();
+                listener.add_monitor_removed_handler(move |it| {
+                    if Self::on_monitor_removed(&sender, it).is_none() {
+                        error!("Failed to send monitor added event!");
+                    }
                 });
-                listener.add_monitor_added_handler(|it| {
-                    info!("Monitor added. {}", it);
+            }
+            {
+                let sender = sender.clone();
+                listener.add_monitor_added_handler(move |it| {
+                    if Self::on_monitor_added(&sender, it).is_none() {
+                        error!("Failed to send monitor added event!");
+                    }
                 });
             }
             {
                 let sender = sender.clone();
                 listener.add_keyboard_layout_change_handler(move |it| {
-                    if Self::on_keyboard_layout_changed(sender.clone(), it).is_none() {
+                    if Self::on_keyboard_layout_changed(&sender, it).is_none() {
                         error!("Failed to send keyboard layout event!");
                     }
                 });
@@ -85,9 +93,10 @@ impl HyprlandHandler {
     }
 
     fn on_active_monitor_changed(
-        sender: ComponentSender<HyprlandHandler>,
+        sender: &ComponentSender<HyprlandHandler>,
         event_data: MonitorEventData,
     ) -> Option<()> {
+        debug!("Active monitor changed: {event_data:?}");
         if let WorkspaceType::Regular(regular) = event_data.workspace {
             let id = regular
                 .parse::<WorkspaceId>()
@@ -102,9 +111,10 @@ impl HyprlandHandler {
     }
 
     fn on_workspace_destroyed(
-        sender: ComponentSender<HyprlandHandler>,
+        sender: &ComponentSender<HyprlandHandler>,
         event_data: WorkspaceDestroyedEventData,
     ) -> Option<()> {
+        debug!("Workspace destroyed: {event_data:?}");
         sender
             .output(Remove {
                 id: event_data.workspace_id,
@@ -113,10 +123,11 @@ impl HyprlandHandler {
         Some(())
     }
 
-    fn on_workspace_change(
-        sender: ComponentSender<HyprlandHandler>,
+    fn on_workspace_changed(
+        sender: &ComponentSender<HyprlandHandler>,
         workspace_type: WorkspaceType,
     ) -> Option<()> {
+        debug!("Workspace changed: {workspace_type:?}");
         if let WorkspaceType::Regular(regular) = workspace_type {
             let id = regular
                 .parse::<WorkspaceId>()
@@ -131,9 +142,10 @@ impl HyprlandHandler {
     }
 
     fn on_workspace_added(
-        sender: ComponentSender<HyprlandHandler>,
+        sender: &ComponentSender<HyprlandHandler>,
         workspace_type: WorkspaceType,
     ) -> Option<()> {
+        debug!("Workspace added: {workspace_type:?}");
         if let WorkspaceType::Regular(regular) = workspace_type {
             let id = regular
                 .parse::<WorkspaceId>()
@@ -148,13 +160,15 @@ impl HyprlandHandler {
                 })
                 .ok()?;
         }
+        
         Some(())
     }
 
     fn on_active_window_changed(
-        sender: ComponentSender<HyprlandHandler>,
+        sender: &ComponentSender<HyprlandHandler>,
         event_data: Option<WindowEventData>,
     ) -> Option<()> {
+        debug!("Active window changed: {event_data:?}");
         sender
             .output(HyprlandMessage::ActiveWindow {
                 // Because hyprland-rs makes activewindow event to have None value
@@ -162,14 +176,31 @@ impl HyprlandHandler {
                 window: event_data,
             })
             .ok()?;
+
         Some(())
     }
 
     fn on_keyboard_layout_changed(
-        sender: ComponentSender<HyprlandHandler>,
+        sender: &ComponentSender<HyprlandHandler>,
         event_data: LayoutEvent,
     ) -> Option<()> {
+        debug!("Keyboard layout changed: {event_data:?}");
         sender.output(event_data.into()).ok()?;
+        
+        Some(())
+    }
+
+    fn on_monitor_added(sender: &ComponentSender<HyprlandHandler>, monitor: String) -> Option<()> {
+        debug!("Monitor added: {monitor}");
+        sender.output(HyprlandMessage::AddMonitor { monitor }).ok()?;
+
+        Some(())
+    }
+
+    fn on_monitor_removed(sender: &ComponentSender<HyprlandHandler>, monitor: String) -> Option<()> {
+        debug!("Monitor removed {monitor}");
+        sender.output(HyprlandMessage::RemoveMonitor { monitor }).ok()?;
+
         Some(())
     }
 }

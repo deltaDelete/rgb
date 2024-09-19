@@ -1,7 +1,7 @@
-# RGBar
+# RGB
 
-RGBar stands for:
-- RGBar isn't Good Bar
+RGB stands for:
+- RGB isn't Good Bar
 - Rusty GTK Bar
 - Relm4 GTK Bar 
 - Really Good Bar

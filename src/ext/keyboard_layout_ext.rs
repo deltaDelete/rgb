@@ -40,7 +40,7 @@ mod tests {
             //     .init();
             env_logger::builder()
                 .target(env_logger::Target::Stdout)
-                .filter_module("regbar", LevelFilter::Debug)
+                .filter_module("rgb", LevelFilter::Debug)
                 .init();
         });
     }
