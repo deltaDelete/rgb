@@ -35,5 +35,5 @@ chrono ={ version = "~0.4"} # Time
 notify = { version = "~6.1.1" } # File watcher
 
 [dependencies.tokio]
-version = "~1.40"
+version = "~1.43"
 features = ["time", "macros", "rt", "fs", "rt-multi-thread"]
